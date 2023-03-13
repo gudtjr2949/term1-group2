@@ -10,6 +10,7 @@ public class BOJ_14890 {
     static int N, L;
     static int[][] map;
     static int answer;
+
     public static void main(String[] args) throws Exception {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(bf.readLine(), " ");
