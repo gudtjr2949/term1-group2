@@ -8,9 +8,9 @@ import java.util.StringTokenizer;
 // 백준 9466 : 텀 프로젝트
 public class BOJ_9466 {
 
-    static int N;
+    static int N, cnt;
     static int[] arr;
-    static boolean[] V;
+    static boolean[] finals, visited;
 
     public static void main(String[] args) throws Exception {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
@@ -21,8 +21,9 @@ public class BOJ_9466 {
         for (int T = 0 ; T < Test ; T++) {
             N = Integer.parseInt(bf.readLine());
             arr = new int[N+1];
-            V = new boolean[N+1];
-            int cnt = 0;
+            finals = new boolean[N+1];
+            visited = new boolean[N+1];
+            cnt = 0;
 
             StringTokenizer st = new StringTokenizer(bf.readLine(), " ");
 
@@ -31,66 +32,33 @@ public class BOJ_9466 {
             }
 
             for (int i = 1 ; i < N+1 ; i++) {
-                if (!V[i]) {
-                    int[] input = new int[N];
-                    input[0] = i;
-                    dfs(arr[i], 1, input, new boolean[N + 1]);
+                if (!visited[i]) {
+                    dfs(i);
                 }
             }
 
-            cnt = count();
-
-            sb.append(cnt).append("\n");
+            sb.append(N-cnt).append("\n");
         }
         System.out.println(sb);
     }
 
     // dfs 돌렸을 때, 자기 자신에게 돌아와야 함
-    private static void dfs(int cur, int idx, int[] input, boolean[] visited) {
-        if (idx == input.length) {
-            return;
-        }
+    private static void dfs(int num) {
+        // 방문처리하고,
+        visited[num] = true;
 
-        if (!visited[cur]) {
-            input[idx] = cur;
-            visited[cur] = true;
-
-            if (check(input, idx)) {
-                visitedCheck(input, idx);
-                return;
-            }
-
-            dfs(arr[cur], idx+1, input, visited);
-        }
-
-    }
-
-    // 싸이클 도는지 확인 -> 처음과 끝이 같으면?
-    private static boolean check(int[] input, int idx) {
-        if (input[0] == input[idx]) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    private static void visitedCheck(int[] input, int idx) {
-        for (int i = 0 ; i <= idx ; i++) {
-            V[input[i]] = true;
-        }
-    }
-
-    // 선택받지 못한 학생 수
-    private static int count() {
-        int cnt = 0;
-
-        for (int i = 1 ; i < N+1 ; i++) {
-            if (!V[i]) {
+        // 선택받은 인원에게 방문한 적이 있고, 아직까지 그 인원이 최종 팀 결정이 되지 않은 경우 -> 싸이클
+        if (visited[arr[num]] && !finals[arr[num]]) {
+            for (int i = arr[num]; num != i; i = arr[i])
                 cnt++;
-            }
+            cnt++;
         }
 
-        return cnt;
+        if (!visited[arr[num]]) {
+            dfs(arr[num]);
+        }
+
+        // 여기까지 내려왔다는 것은 끝까지 다 돌고 내려온거
+        finals[num] = true;
     }
 }
