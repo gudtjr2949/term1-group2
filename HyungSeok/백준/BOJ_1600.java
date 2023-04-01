@@ -1,9 +1,12 @@
+package coding_test.백준;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+// 백준 1600 : 말이 되고픈 원숭이
 public class BOJ_1600 {
 
 	static int[] horse_dx = { 1, 2, 2, 1, -1, -2, -2, -1 };
@@ -23,7 +26,7 @@ public class BOJ_1600 {
 		W = Integer.parseInt(st.nextToken());
 		H = Integer.parseInt(st.nextToken());
 		
-		answer = 0;
+		answer = -1;
 		
 		map = new int[H][W];
 		
@@ -33,48 +36,25 @@ public class BOJ_1600 {
 				map[i][j] = Integer.parseInt(st.nextToken());
 			}
 		}
-		
-		if (W == 1 && H == 1 && map[0][0] == 0) {
-			answer = 0;
-		}
-		else {
-			
-			bfs();
-			
-			if (answer == 0) {
-				answer = -1;
-			}
-		}
-		
-		
+
+		bfs();
+
 		System.out.println(answer);
 	}
-	
-	
 	
 	private static void bfs() {
 		Queue<Monkey> Q = new LinkedList<>();
 		Q.add(new Monkey(0, 0, K, 0));
 		
-		boolean[][][] visited = new boolean[2][H][W];
-		visited[0][0][0] = true;
-		visited[1][0][0] = true;
-		
+		boolean[][][] visited = new boolean[31][H][W];
+
 		while(!Q.isEmpty()) {
 			int size = Q.size();
 			
 			for (int i = 0 ; i < size ; i++) {
 				Monkey m = Q.poll();
-				
-				System.out.println(m.toString());
-				
-				if (m.k > 0) {
-					visited[0][m.y][m.x] = true;
-				}
-				else {
-					visited[1][m.y][m.x] = true;
-				}
-				
+
+				visited[m.k][m.y][m.x] = true;
 				
 				if (m.y == H-1 && m.x == W-1) {
 					answer = m.depth;
@@ -85,24 +65,21 @@ public class BOJ_1600 {
 					for (int j = 0 ; j < 8 ; j++) { // 말 처럼 움직이는 경우
 						int ny = m.y + horse_dy[j];
 						int nx = m.x + horse_dx[j];
-						
-						if (nx >= 0 && nx < W && ny >= 0 && ny < H && map[ny][nx] == 0 && !visited[0][ny][nx]) {
-							if (m.k-1 == 0) {
-								visited[1][ny][nx] = true;
-							}
-							else {
-								visited[0][ny][nx] = true;
-							}
+
+						if (nx >= 0 && nx < W && ny >= 0 && ny < H && map[ny][nx] == 0 && !visited[m.k-1][ny][nx]) {
+							visited[m.k-1][ny][nx] = true;
+
 							Q.add(new Monkey(nx, ny, m.k-1, m.depth+1));
 						}
 					}
-					
-					for (int j = 0 ; j < 4 ; j++) { // 말 처럼 움직이지 않는 경우
+
+					for (int j = 0 ; j < 4 ; j++) { // 말처럼 움직을 수 있지만 말 처럼 움직이지 않는 경우
 						int ny = m.y + monkey_dy[j];
 						int nx = m.x + monkey_dx[j];
-						
-						if (nx >= 0 && nx < W && ny >= 0 && ny < H && map[ny][nx] == 0 && !visited[0][ny][nx]) {
-							visited[0][ny][nx] = true;
+
+						if (nx >= 0 && nx < W && ny >= 0 && ny < H && map[ny][nx] == 0 && !visited[m.k][ny][nx]) {
+							visited[m.k][ny][nx] = true;
+
 							Q.add(new Monkey(nx, ny, m.k, m.depth+1));
 						}
 					}
@@ -111,19 +88,16 @@ public class BOJ_1600 {
 					for (int j = 0 ; j < 4 ; j++) {
 						int ny = m.y + monkey_dy[j];
 						int nx = m.x + monkey_dx[j];
-						
-						if (nx >= 0 && nx < W && ny >= 0 && ny < H && map[ny][nx] == 0 && !visited[1][ny][nx]) {
-							visited[1][ny][nx] = true;
+
+						if (nx >= 0 && nx < W && ny >= 0 && ny < H && map[ny][nx] == 0 && !visited[0][ny][nx]) {
+							visited[0][ny][nx] = true;
 							Q.add(new Monkey(nx, ny, m.k, m.depth+1));
 						}
 					}
 				}
-				
 			}
 		}
 	}
-
-
 
 	static class Monkey {
 		int x, y, k, depth;
@@ -135,12 +109,5 @@ public class BOJ_1600 {
 			this.k = k;
 			this.depth = depth;
 		}
-
-		@Override
-		public String toString() {
-			return "Monkey [x=" + x + ", y=" + y + ", k=" + k + ", depth=" + depth + "]";
-		}
-
-		
 	}
 }
